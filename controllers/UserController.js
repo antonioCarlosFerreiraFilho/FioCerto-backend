@@ -83,7 +83,46 @@ const profileUser = async (req, res) => {
 
 //  Update User  //
 const UpdateUSer = async (req, res) => {
-  res.send("ola mundo");
+  const { firstName, lastName, phone, password } = req.body;
+
+  let imageProfile = null;
+
+  if (req.file) {
+    imageProfile = req.file.filename;
+  }
+
+  const reqUser = req.user;
+  const userDB = await User.findById(reqUser._id).select("-password");
+
+  if (firstName) {
+    userDB.firstName = firstName;
+  }
+
+  if (lastName) {
+    userDB.lastName = lastName;
+  }
+
+  if (phone) {
+    userDB.phone = phone;
+  }
+
+  if (password) {
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    userDB.password = passwordHash;
+  }
+
+  if (imageProfile) {
+    userDB.imageProfile = imageProfile;
+  }
+
+  await userDB.save();
+
+  return res.status(200).json({
+    msg: "Usuario Atualizado",
+    user: userDB,
+  });
 };
 
 //  Delete User  //
