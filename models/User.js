@@ -3,7 +3,10 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema(
   {
-    imageProfile: String,
+    imageProfileNAME: String,
+    imageProfileSIZE: String,
+    imageProfileKEY: String,
+    imageProfileURL: String,
     firstName: String,
     lastName: String,
     phone: { type: Number, default: 0 },

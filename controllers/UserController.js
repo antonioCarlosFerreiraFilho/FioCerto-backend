@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Test = require("../models/Test");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const jwt_secret = process.env.JWT_SECRET;
@@ -85,14 +86,22 @@ const profileUser = async (req, res) => {
 const UpdateUSer = async (req, res) => {
   const { firstName, lastName, phone, password } = req.body;
 
-  let imageProfile = null;
-
-  if (req.file) {
-    imageProfile = req.file.filename;
-  }
-
   const reqUser = req.user;
   const userDB = await User.findById(reqUser._id).select("-password");
+  //Image Upload
+  if (req.file) {
+    const {
+      originalname: imageProfileNAME,
+      size: imageProfileSIZE,
+      key: imageProfileKEY,
+      location: imageProfileURL = "",
+    } = req.file;
+
+    userDB.imageProfileNAME = imageProfileNAME;
+    userDB.imageProfileSIZE = imageProfileSIZE;
+    userDB.imageProfileKEY = imageProfileKEY;
+    userDB.imageProfileURL = imageProfileURL;
+  }
 
   if (firstName) {
     userDB.firstName = firstName;
@@ -113,16 +122,37 @@ const UpdateUSer = async (req, res) => {
     userDB.password = passwordHash;
   }
 
-  if (imageProfile) {
-    userDB.imageProfile = imageProfile;
-  }
-
   await userDB.save();
 
   return res.status(200).json({
     msg: "Usuario Atualizado",
     user: userDB,
   });
+};
+
+//  permissions User  //
+const permissionsUSer = async (req, res) => {
+  const reqUser = req.user;
+  const userDB = await User.findById(reqUser._id).select("-password");
+
+  if (
+    userDB.phone == process.env.ADM_PHONE &&
+    userDB.email == process.env.ADM_EMAIL &&
+    userDB.id == process.env.ADM_ID
+  ) {
+    const { permissions } = req.body;
+
+    if (permissions) {
+      userDB.permissions = permissions;
+    }
+
+    return res.status(200).json({
+      msg: "Usuario Autenticado é Atualizado",
+      user: userDB,
+    });
+  }
+
+  return res.status(422).json({ errors: ["Usuario não Autorizado."] });
 };
 
 //  Delete User  //
@@ -154,24 +184,48 @@ const deletUser = async (req, res) => {
 
 //   All Users   //
 const allUsers = async (req, res) => {
-  const allUsers = await User.find({})
-    .sort([["createdAt", -1]])
-    .exec();
+  const reqUser = req.user;
+  const userDB = await User.findById(reqUser._id).select("-password");
 
-  return res.status(200).json(allUsers);
+  if (
+    userDB.phone == process.env.ADM_PHONE &&
+    userDB.email == process.env.ADM_EMAIL &&
+    userDB.id == process.env.ADM_ID
+  ) {
+    const allUsers = await User.find({})
+      .sort([["createdAt", -1]])
+      .exec();
+
+    return res.status(200).json(allUsers);
+  } else {
+    return res.status(422).json({ errors: ["Usuario não Autorizado."] });
+  }
 };
 
 //   Search Users   //
 const searchUsers = async (req, res) => {
   const { q } = req.query;
 
-  const searchUsers = await User.find({ firstName: new RegExp(q, "i") }).exec();
+  const reqUser = req.user;
+  const userDB = await User.findById(reqUser._id).select("-password");
 
-  if (searchUsers == "") {
-    return res.status(422).json({ errors: ["Sem Resultados."] });
+  if (
+    userDB.phone == process.env.ADM_PHONE &&
+    userDB.email == process.env.ADM_EMAIL &&
+    userDB.id == process.env.ADM_ID
+  ) {
+    const searchUsers = await User.find({
+      firstName: new RegExp(q, "i"),
+    }).exec();
+
+    if (searchUsers == "") {
+      return res.status(422).json({ errors: ["Sem Resultados."] });
+    }
+
+    res.status(200).json(searchUsers);
+  } else {
+    return res.status(422).json({ errors: ["Usuario não Autorizado."] });
   }
-
-  res.status(200).json(searchUsers);
 };
 
 module.exports = {
@@ -179,6 +233,7 @@ module.exports = {
   loginUser,
   profileUser,
   UpdateUSer,
+  permissionsUSer,
   deletUser,
   allUsers,
   searchUsers,

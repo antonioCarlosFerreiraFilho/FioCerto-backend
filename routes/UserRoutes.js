@@ -4,11 +4,24 @@ const router = express.Router();
 //Middlewares
 const ErrorsValidate = require("../middlewares/ErrorsValidate");
 const AuthGuard = require("../middlewares/AuthGuard");
-const {UploadImage} = require("../middlewares/UploadImage");
-const {registerValidate, loginValidate, UpdateValidate} = require("../middlewares/UserValidate");
+const { UploadImage } = require("../middlewares/UploadImage");
+const {
+  registerValidate,
+  loginValidate,
+  UpdateValidate,
+} = require("../middlewares/UserValidate");
 
 //Controllers
-const { registerUser, loginUser, profileUser, UpdateUSer} = require("../controllers/UserController");
+const {
+  registerUser,
+  loginUser,
+  profileUser,
+  UpdateUSer,
+  permissionsUSer,
+  deletUser,
+  allUsers,
+  searchUsers
+} = require("../controllers/UserController");
 
 //  register
 router.post("/register", registerValidate(), ErrorsValidate, registerUser);
@@ -18,6 +31,12 @@ router.post("/login", loginValidate(), ErrorsValidate, loginUser);
 router.get("/profile", AuthGuard, profileUser);
 //  update
 router.put("/Update", AuthGuard, UploadImage.single("file"), UpdateValidate(), ErrorsValidate, UpdateUSer);
+//  permissions
+router.put("/permissions", AuthGuard, permissionsUSer);
+//  Show
+router.get("/showUsers", AuthGuard, allUsers);
+//  Search Users
+router.get("/search", AuthGuard, searchUsers);
 
 
 module.exports = router;
