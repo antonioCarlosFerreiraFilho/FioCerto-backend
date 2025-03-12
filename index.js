@@ -15,6 +15,8 @@ app.use(cors());
 
 //imagens Static
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+//imagens Static
+app.use("/files", express.static(path.resolve(__dirname, "..", "tmp", "/uploads")));
 
 //route API
 const router = require("./routes/Route.js");

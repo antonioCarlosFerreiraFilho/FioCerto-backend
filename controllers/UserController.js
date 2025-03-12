@@ -1,9 +1,18 @@
+// Models
 const User = require("../models/User");
-const Test = require("../models/Test");
+// Lib crypto Pass
 const bcrypt = require("bcrypt");
+// Lib Token
 const jwt = require("jsonwebtoken");
 const jwt_secret = process.env.JWT_SECRET;
+// ADM config
+const ADM_phone = process.env.ADM_PHONE;
+const ADM_email = process.env.ADM_EMAIL;
+const ADM_id = process.env.ADM_ID;
+const ADM_permissions = process.env.ADM_PERMISSIONS;
 
+
+// ADD TOKEN //
 const authUserToken = (id) => {
   return jwt.sign({ id }, jwt_secret, {
     expiresIn: "7d",
@@ -136,15 +145,17 @@ const permissionsUSer = async (req, res) => {
   const userDB = await User.findById(reqUser._id).select("-password");
 
   if (
-    userDB.phone == process.env.ADM_PHONE &&
-    userDB.email == process.env.ADM_EMAIL &&
-    userDB.id == process.env.ADM_ID
+    userDB.phone == ADM_phone &&
+    userDB.email == ADM_email &&
+    userDB.id == ADM_id
   ) {
     const { permissions } = req.body;
 
     if (permissions) {
       userDB.permissions = permissions;
     }
+
+    await userDB.save();
 
     return res.status(200).json({
       msg: "Usuario Autenticado é Atualizado",
@@ -160,14 +171,23 @@ const deletUser = async (req, res) => {
   const { id } = req.params;
   const reqUser = req.user;
 
-  try {
-    const userDB = await User.findById(new mongoose.Types.ObjectId(id));
+  //id Usuario a ser deletado
+  const userDB = await User.findById(id);
+  //ADM Infos
+  const ADMverifi = await User.findById(reqUser._id).select("-password");
 
+  if (
+    ADMverifi.phone == ADM_phone &&
+    ADMverifi.email == ADM_email &&
+    ADMverifi._id == ADM_id &&
+    ADMverifi.permissions == ADM_permissions
+  ) {
     if (!userDB) {
       return res.status(404).json({ errors: ["Usuario Não Encontrado"] });
     }
 
-    if (!userDB.userId.equals(reqUser._id)) {
+    //Verifi ADM
+    if (!ADMverifi._id.equals(ADM_id)) {
       return res.status(422).json({ errors: ["Você não tem o direito."] });
     }
 
@@ -177,8 +197,8 @@ const deletUser = async (req, res) => {
       id: userDB._id,
       message: "Usuario excluido",
     });
-  } catch (err) {
-    return res.status(422).json({ errors: ["tente novamente mais tarde."] });
+  } else {
+    return res.status(422).json({ errors: ["Você não tem o direito."] });
   }
 };
 
@@ -188,9 +208,10 @@ const allUsers = async (req, res) => {
   const userDB = await User.findById(reqUser._id).select("-password");
 
   if (
-    userDB.phone == process.env.ADM_PHONE &&
-    userDB.email == process.env.ADM_EMAIL &&
-    userDB.id == process.env.ADM_ID
+    userDB.phone == ADM_phone &&
+    userDB.email == ADM_email &&
+    userDB._id == ADM_id &&
+    userDB.permissions == ADM_permissions
   ) {
     const allUsers = await User.find({})
       .sort([["createdAt", -1]])
@@ -210,9 +231,10 @@ const searchUsers = async (req, res) => {
   const userDB = await User.findById(reqUser._id).select("-password");
 
   if (
-    userDB.phone == process.env.ADM_PHONE &&
-    userDB.email == process.env.ADM_EMAIL &&
-    userDB.id == process.env.ADM_ID
+    userDB.phone == ADM_phone &&
+    userDB.email == ADM_email &&
+    userDB._id == ADM_id &&
+    userDB.permissions == ADM_permissions
   ) {
     const searchUsers = await User.find({
       firstName: new RegExp(q, "i"),

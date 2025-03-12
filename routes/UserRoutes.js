@@ -33,6 +33,8 @@ router.get("/profile", AuthGuard, profileUser);
 router.put("/Update", AuthGuard, UploadImage.single("file"), UpdateValidate(), ErrorsValidate, UpdateUSer);
 //  permissions
 router.put("/permissions", AuthGuard, permissionsUSer);
+//  Delete
+router.delete("/delete/:id", AuthGuard, deletUser);
 //  Show
 router.get("/showUsers", AuthGuard, allUsers);
 //  Search Users

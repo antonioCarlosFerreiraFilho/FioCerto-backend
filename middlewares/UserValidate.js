@@ -96,7 +96,6 @@ const UpdateValidate = () => {
   ];
 };
 
-
 module.exports = {
   registerValidate,
   loginValidate,
