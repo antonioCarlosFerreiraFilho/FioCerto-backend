@@ -44,15 +44,15 @@ const storageTypes = {
 
 const UploadImage = multer({
   storage: storageTypes["awsS3"],
-  fileFilter(req, file, cb) {
-    const allowedMimes = ["image/jpeg", "image/png", "image/jpg"];
-
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error("So aceitamos imagems no formato: (.png) (.jpeg) (.jpg)"));
-    }
-  },
+  //fileFilter(req, file, cb) {
+  //  const allowedMimes = ["image/jpeg", "image/png", "image/jpg"];
+  //
+  //  if (allowedMimes.includes(file.mimetype)) {
+  //    cb(null, true);
+  //  } else {
+  //    cb(new Error("So aceitamos imagems no formato: (.png) (.jpeg) (.jpg)"));
+  //  }
+  //},
   limits: {
     fileSize: 2 * 1024 * 1024,
   },

@@ -9,14 +9,26 @@ const registerValidate = () => {
       .isLength({ min: 4 })
       .withMessage("O Primeiro nome deve conter no minimo 4 Caracteres.")
       .isLength({ max: 10 })
-      .withMessage("O Primeiro nome deve conter no maximo 8 Caracteres."),
+      .withMessage("O Primeiro nome deve conter no maximo 8 Caracteres.")
+      .custom((value) => {
+        if (value.toLowerCase().includes('admin')) {
+          throw new Error('O nome de usuário não pode conter "admin".');
+        }
+        return true;
+      }),
     body("lastName")
       .isString()
       .withMessage("O Ultimo nome e obrigatorio")
       .isLength({ min: 4 })
       .withMessage("O Ultimo nome deve conter no minimo 4 Caracteres.")
       .isLength({ max: 11 })
-      .withMessage("O Ultimo nome deve conter no maximo 10 Caracteres."),
+      .withMessage("O Ultimo nome deve conter no maximo 10 Caracteres.")
+      .custom((value) => {
+        if (value.toLowerCase().includes('admin')) {
+          throw new Error('O nome de usuário não pode conter "admin".');
+        }
+        return true;
+      }),
     body("phone")
       .optional()
       .isString()
