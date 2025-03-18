@@ -1,6 +1,13 @@
 // Mongoose Config
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+// AWS config
+const aws = require("aws-sdk");
+const s3 = new aws.S3();
+// DOC statics
+const fs = require("fs");
+const path = require("path");
+const { promisify } = require("util");
 
 // Model
 const ArticleSchema = new Schema(
