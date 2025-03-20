@@ -106,7 +106,21 @@ const updateValidate = () => {
   ];
 };
 
+// Comments
+const commentsValidate = () => {
+  return [
+    body("comments")
+      .isString()
+      .withMessage("o comentario e obrigatório")
+      .isLength({ min: 5 })
+      .withMessage("o comentario deve conter no minimo 5 caracteres")
+      .isLength({ max: 400 })
+      .withMessage("o comentario deve conter no maximo 400 caracteres"),
+  ];
+};
+
 module.exports = {
   articleValidate,
   updateValidate,
+  commentsValidate,
 };

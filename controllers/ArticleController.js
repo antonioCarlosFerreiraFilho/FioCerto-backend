@@ -241,12 +241,10 @@ const DeleteArticle = async (req, res) => {
         await Article.findByIdAndDelete(ArticleDB._id);
 
         await s3.deleteObjects(DellImages).promise();
-        res
-          .status(200)
-          .json({
-            message: "Artigo é Imagens excluídas com sucesso",
-            deleted: keys,
-          });
+        res.status(200).json({
+          message: "Artigo é Imagens excluídas com sucesso",
+          deleted: keys,
+        });
       } catch (error) {
         console.error("Erro ao excluir imagens:", error);
         res.status(500).json({ errors: "Erro ao excluir as imagens" });
@@ -259,34 +257,226 @@ const DeleteArticle = async (req, res) => {
   }
 };
 
-//   Comments
+// GetArticle
+const GetArticle = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const ArticleDB = await Article.findById(id);
+
+    if (!ArticleDB) {
+      return res.status(404).json({ errors: ["Artigo não encontrado."] });
+    }
+
+    return res.status(200).json(ArticleDB);
+  } catch (err) {
+    return res.status(404).json({ errors: ["Artigo não encontrado."] });
+  }
+};
+
+// Comments
 const CommentsArticle = async (req, res) => {
-  res.send("Comments");
+  const { id } = req.params;
+  const { comments } = req.body;
+  const reqUser = req.user;
+
+  try {
+    // Data Comment
+    const data = new Date();
+    const dataDay = String(data.getDate()).padStart(2, "0");
+    const dataMonth = String(data.getMonth() + 1).padStart(2, "0");
+    const dataYear = data.getFullYear();
+    const dataComment = `${dataDay} /  ${dataMonth} / ${dataYear}`;
+
+    const UserCurrent = await User.findById(reqUser._id);
+    const ArticleDB = await Article.findById(id);
+
+    if (!ArticleDB) {
+      return res.status(404).json({ errors: ["Artigo não encontrado."] });
+    }
+
+    // Length Comments Article
+    const commentsArticle = ArticleDB.comments.length;
+
+    const newComment = {
+      userName: UserCurrent.firstName + " " + UserCurrent.lastName,
+      userId: UserCurrent._id,
+      dataComment,
+      idComment: commentsArticle + 1,
+      comments,
+    };
+
+    if (!newComment) {
+      return res
+        .status(422)
+        .json({ errors: ["Erro ao commentar, Tente novamente mais tarde."] });
+    }
+
+    await ArticleDB.comments.push(newComment);
+
+    await ArticleDB.save();
+
+    res.status(200).json({
+      message: "comentário Publicado",
+    });
+  } catch (err) {
+    return res.status(404).json({ errors: ["Artigo não encontrado."] });
+  }
+};
+
+// Delete Comment
+const DelCommentsArticle = async (req, res) => {
+  const { postId, commentId } = req.params;
+  const reqUser = req.user;
+
+  const UserCurrent = await User.findById(reqUser._id);
+  const ArticleDB = await Article.findById(postId);
+  // ADM user validation
+  if (
+    UserCurrent.phone == ADM_phone &&
+    UserCurrent.email == ADM_email &&
+    UserCurrent.id == ADM_id
+  ) {
+    // Transform IDadm and IdArticle .toString
+    const ArticleADMid = await ArticleDB.admID.toString();
+    const AdmID = await UserCurrent._id.toString();
+    //
+    const ArticleADMpass = await ArticleDB.admPass.toString();
+    const AdmPass = await UserCurrent.password.toString();
+    if (
+      (await bcrypt.compare(AdmID, ArticleADMid)) &&
+      bcrypt.compare(ArticleADMpass, AdmPass)
+    ) {
+      try {
+        if (!ArticleDB) {
+          return res.status(404).json({ errors: ["Artigo não encontrado."] });
+        }
+
+        if (!commentId) {
+          return res
+            .status(404)
+            .json({ errors: ["Id Commentario Nessesario."] });
+        }
+
+        const convArray = ArticleDB.comments.findIndex(
+          (item) => item.idComment == commentId
+        );
+
+        const commentCurrent = ArticleDB.comments[convArray];
+
+        if (!commentCurrent) {
+          return res
+            .status(404)
+            .json({ errors: ["Commentario não encontrado."] });
+        }
+
+        await ArticleDB.comments.remove(commentCurrent);
+
+        await ArticleDB.save();
+
+        return res.status(200).json({
+          msg: "Comentario excluido",
+        });
+      } catch (err) {
+        return res.status(404).json({ errors: ["Artigo não encontrado."] });
+      }
+    }
+  } else {
+    return res.status(404).json({ errors: ["Usuario não Autorizado"] });
+  }
 };
 
 //   Likes
 const LikesArticle = async (req, res) => {
-  res.send("Likes");
+  const { id } = req.params;
+  const reqUser = req.user;
+
+  const ArticleDB = await Article.findById(id);
+
+  if (!ArticleDB) {
+    return res.status(404).json({ errors: ["Artigo não encontrado."] });
+  }
+
+  if (ArticleDB.likes.includes(reqUser._id)) {
+    return res.status(422).json({ errors: ["voce já curtiu este Artigo."] });
+  }
+
+  ArticleDB.likes.push(reqUser._id);
+
+  await ArticleDB.save();
+
+  return res.status(200).json({
+    message: "Este Artigo foi curtido!.",
+  });
 };
 
 //   Views
 const ViewsArticle = async (req, res) => {
-  res.send("Views");
+  const { id } = req.params;
+  const reqUser = req.user;
+
+  const ArticleDB = await Article.findById(id);
+  const UserCurrent = await User.findById(reqUser._id);
+
+  if (!ArticleDB) {
+    return res.status(404).json({ errors: ["Artigo não encontrado."] });
+  }
+
+  // Length Views Article
+  const ViewsArticle = ArticleDB.views.length;
+
+  const newViews = {
+    userName: UserCurrent.firstName + " " + UserCurrent.lastName,
+    userId: UserCurrent._id,
+    idViews: ViewsArticle + 1,
+  };
+
+  await ArticleDB.views.push(newViews);
+
+  await ArticleDB.save();
+
+  return res.status(200).json({
+    view: newViews,
+  });
 };
 
 //   Recently
 const RecentlyPostedArticle = async (req, res) => {
-  res.send("recentlyPosted");
+  if ((await Article.find({})).length > 5) {
+    const FristSix = await Article.find({})
+      .sort([["createdAt", -1]])
+      .limit(6)
+      .exec();
+
+    return res.status(200).json(FristSix);
+  } else {
+    return res.status(422).json({ errors: ["Erro ao Listar."] });
+  }
 };
 
 //   About
 const AboutArticle = async (req, res) => {
-  res.send("About");
+  if ((await Article.find({})).length > 3) {
+    const FristThree = await Article.find({})
+      .sort([["createdAt", -1]])
+      .limit(3)
+      .exec();
+
+    return res.status(200).json(FristThree);
+  } else {
+    return res.status(422).json({ errors: ["Erro ao Listar."] });
+  }
 };
 
 //   Pagination
 const PaginationArticle = async (req, res) => {
-  res.send("Pagination");
+  const { page = 0 } = req.query;
+
+  const offset = page * 6;
+
+  const ArticlesDB = await Article.find({}).skip(offset).limit(6);
+
+  return res.status(200).json({ArticlesDB});
 };
 
 module.exports = {
@@ -294,5 +484,12 @@ module.exports = {
   ReadArticle,
   UpdateArticle,
   DeleteArticle,
+  GetArticle,
   CommentsArticle,
+  DelCommentsArticle,
+  LikesArticle,
+  ViewsArticle,
+  RecentlyPostedArticle,
+  AboutArticle,
+  PaginationArticle,
 };
