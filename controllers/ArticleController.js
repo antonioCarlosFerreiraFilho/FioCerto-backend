@@ -10,10 +10,6 @@ const ADM_id = process.env.ADM_ID;
 // AWS config
 const aws = require("aws-sdk");
 const s3 = new aws.S3();
-// DOC statics
-const fs = require("fs");
-const path = require("path");
-const { promisify } = require("util");
 
 //   Create
 const CreateArticle = async (req, res) => {
