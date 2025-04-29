@@ -11,7 +11,6 @@ const ADM_email = process.env.ADM_EMAIL;
 const ADM_id = process.env.ADM_ID;
 const ADM_permissions = process.env.ADM_PERMISSIONS;
 
-
 // ADD TOKEN //
 const authUserToken = (id) => {
   return jwt.sign({ id }, jwt_secret, {
@@ -133,7 +132,7 @@ const UpdateUSer = async (req, res) => {
   await userDB.save();
 
   return res.status(200).json({
-    msg: "Usuario Atualizado",
+    message: " Usuario Atualizado. ",
     user: userDB,
   });
 };
@@ -203,23 +202,11 @@ const deletUser = async (req, res) => {
 
 //   All Users   //
 const allUsers = async (req, res) => {
-  const reqUser = req.user;
-  const userDB = await User.findById(reqUser._id).select("-password");
+  const allUsers = await User.find({})
+    .sort([["createdAt", -1]])
+    .exec();
 
-  if (
-    userDB.phone == ADM_phone &&
-    userDB.email == ADM_email &&
-    userDB._id == ADM_id &&
-    userDB.permissions == ADM_permissions
-  ) {
-    const allUsers = await User.find({})
-      .sort([["createdAt", -1]])
-      .exec();
-
-    return res.status(200).json(allUsers);
-  } else {
-    return res.status(422).json({ errors: ["Usuario não Autorizado."] });
-  }
+  return res.status(200).json(allUsers);
 };
 
 //   Search Users   //

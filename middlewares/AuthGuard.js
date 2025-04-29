@@ -13,7 +13,7 @@ const AuthGuard = async (req, res, next) => {
 
   try {
     const tokenVerify = jwt.verify(token, jwt_secret);
-    req.user = await User.findById(tokenVerify.id).select(["-password", "-permissions", "-phone", "-email",]);
+    req.user = await User.findById(tokenVerify.id);
     next();
   } catch (err) {
     return res.status(422).json({ errors: ["Acesso Negado."] });

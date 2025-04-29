@@ -466,13 +466,13 @@ const AboutArticle = async (req, res) => {
 
 //   Pagination
 const PaginationArticle = async (req, res) => {
-  const { page = 0 } = req.query;
+  const { page = 0 } = req.body;
 
   const offset = page * 6;
 
-  const ArticlesDB = await Article.find({}).skip(offset).limit(6);
+  const ArticlesDB = await Article.find({}).skip(offset).limit(5).exec();
 
-  return res.status(200).json({ArticlesDB});
+  res.status(200).json(ArticlesDB);
 };
 
 module.exports = {

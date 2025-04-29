@@ -96,6 +96,7 @@ const UpdateValidate = () => {
       .withMessage("O Ultimo nome deve conter no maximo 8 Caracteres."),
     body("password")
       .optional()
+      .isString()
       .isLength({ min: 6 })
       .withMessage("A senha deve conter um minimo 6 Caracteres.")
       .isLength({ max: 10 })

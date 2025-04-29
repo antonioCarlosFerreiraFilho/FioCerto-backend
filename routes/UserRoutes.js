@@ -20,7 +20,7 @@ const {
   permissionsUSer,
   deletUser,
   allUsers,
-  searchUsers
+  searchUsers,
 } = require("../controllers/UserController");
 
 //  register
@@ -30,15 +30,21 @@ router.post("/login", loginValidate(), ErrorsValidate, loginUser);
 //  profile
 router.get("/profile", AuthGuard, profileUser);
 //  update
-router.put("/Update", AuthGuard, UploadImage.single("file"), UpdateValidate(), ErrorsValidate, UpdateUSer);
+router.put(
+  "/Update",
+  AuthGuard,
+  UploadImage.single("file"),
+  UpdateValidate(),
+  ErrorsValidate,
+  UpdateUSer
+);
 //  permissions
 router.put("/permissions", AuthGuard, permissionsUSer);
 //  Delete
 router.delete("/delete/:id", AuthGuard, deletUser);
 //  Show
-router.get("/showUsers", AuthGuard, allUsers);
+router.get("/showUsers", allUsers);
 //  Search Users
 router.get("/search", AuthGuard, searchUsers);
-
 
 module.exports = router;

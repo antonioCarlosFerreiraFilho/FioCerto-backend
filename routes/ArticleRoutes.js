@@ -74,6 +74,6 @@ router.get("/Recently", ErrorsValidate, RecentlyPostedArticle);
 //  About Article
 router.get("/About", ErrorsValidate, AboutArticle);
 //  Pagination
-router.get("/gallery", ErrorsValidate, PaginationArticle);
+router.get("/gallery", PaginationArticle);
 
 module.exports = router;
