@@ -18,6 +18,7 @@ const {
   UpdateArticle,
   DeleteArticle,
   GetArticle,
+  CommentsArticleRead,
   CommentsArticle,
   DelCommentsArticle,
   LikesArticle,
@@ -50,6 +51,8 @@ router.put(
 router.delete("/del/:id", AuthGuard, ErrorsValidate, DeleteArticle);
 //  GetArticle
 router.get("/get/:id", ErrorsValidate, GetArticle);
+// Read Comments
+router.get("/readComments/:id", CommentsArticleRead);
 //  Comments
 router.put(
   "/comment/:id",
@@ -70,9 +73,9 @@ router.put("/:id", AuthGuard, ErrorsValidate, LikesArticle);
 //  View
 router.put("/view/:id", AuthGuard, ErrorsValidate, ViewsArticle);
 //  Recently Posted Article
-router.get("/Recently", ErrorsValidate, RecentlyPostedArticle);
+router.get("/recently", RecentlyPostedArticle);
 //  About Article
-router.get("/About", ErrorsValidate, AboutArticle);
+router.get("/about", AboutArticle);
 //  Pagination
 router.get("/gallery", PaginationArticle);
 

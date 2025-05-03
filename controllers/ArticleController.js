@@ -270,54 +270,66 @@ const GetArticle = async (req, res) => {
   }
 };
 
+// Read Comments Article
+const CommentsArticleRead = async (req, res) => {
+  const { id } = req.params;
+
+  const ArticleDB = await Article.findById(id);
+
+  if (!ArticleDB) {
+    return res.status(404).json({ errors: ["Artigo não encontrado."] });
+  }
+
+  const ArticleComments = ArticleDB.comments;
+
+  return res.status(200).json(ArticleComments);
+};
+
 // Comments
 const CommentsArticle = async (req, res) => {
   const { id } = req.params;
   const { comments } = req.body;
   const reqUser = req.user;
 
-  try {
-    // Data Comment
-    const data = new Date();
-    const dataDay = String(data.getDate()).padStart(2, "0");
-    const dataMonth = String(data.getMonth() + 1).padStart(2, "0");
-    const dataYear = data.getFullYear();
-    const dataComment = `${dataDay} /  ${dataMonth} / ${dataYear}`;
+  // Data Comment
+  const data = new Date();
+  const dataDay = String(data.getDate()).padStart(2, "0");
+  const dataMonth = String(data.getMonth() + 1).padStart(2, "0");
+  const dataYear = data.getFullYear();
+  const dataComment = `${dataDay} /  ${dataMonth} / ${dataYear}`;
 
-    const UserCurrent = await User.findById(reqUser._id);
-    const ArticleDB = await Article.findById(id);
+  const UserCurrent = await User.findById(reqUser._id);
+  const ArticleDB = await Article.findById(id);
 
-    if (!ArticleDB) {
-      return res.status(404).json({ errors: ["Artigo não encontrado."] });
-    }
-
-    // Length Comments Article
-    const commentsArticle = ArticleDB.comments.length;
-
-    const newComment = {
-      userName: UserCurrent.firstName + " " + UserCurrent.lastName,
-      userId: UserCurrent._id,
-      dataComment,
-      idComment: commentsArticle + 1,
-      comments,
-    };
-
-    if (!newComment) {
-      return res
-        .status(422)
-        .json({ errors: ["Erro ao commentar, Tente novamente mais tarde."] });
-    }
-
-    await ArticleDB.comments.push(newComment);
-
-    await ArticleDB.save();
-
-    res.status(200).json({
-      message: "comentário Publicado",
-    });
-  } catch (err) {
+  if (!ArticleDB) {
     return res.status(404).json({ errors: ["Artigo não encontrado."] });
   }
+
+  // Length Comments Article
+  const commentsArticle = ArticleDB.comments.length;
+
+  const newComment = {
+    userName: UserCurrent.firstName + " " + UserCurrent.lastName,
+    userId: UserCurrent._id,
+    dataComment,
+    idComment: commentsArticle + 1,
+    comments,
+  };
+
+  if (!newComment) {
+    return res
+      .status(422)
+      .json({ errors: ["Erro ao commentar, Tente novamente mais tarde."] });
+  }
+
+  await ArticleDB.comments.push(newComment);
+
+  await ArticleDB.save();
+
+  return res.status(200).json({
+    comments: newComment,
+    message: "comentário Publicado",
+  });
 };
 
 // Delete Comment
@@ -438,30 +450,22 @@ const ViewsArticle = async (req, res) => {
 
 //   Recently
 const RecentlyPostedArticle = async (req, res) => {
-  if ((await Article.find({})).length > 5) {
-    const FristSix = await Article.find({})
-      .sort([["createdAt", -1]])
-      .limit(6)
-      .exec();
+  const FristSix = await Article.find({})
+    .sort([["createdAt", -1]])
+    .limit(6)
+    .exec();
 
-    return res.status(200).json(FristSix);
-  } else {
-    return res.status(422).json({ errors: ["Erro ao Listar."] });
-  }
+  return res.status(200).json(FristSix);
 };
 
 //   About
 const AboutArticle = async (req, res) => {
-  if ((await Article.find({})).length > 3) {
-    const FristThree = await Article.find({})
-      .sort([["createdAt", -1]])
-      .limit(3)
-      .exec();
+  const FristThree = await Article.find({})
+    .sort([["createdAt", -1]])
+    .limit(3)
+    .exec();
 
-    return res.status(200).json(FristThree);
-  } else {
-    return res.status(422).json({ errors: ["Erro ao Listar."] });
-  }
+  return res.status(200).json(FristThree);
 };
 
 //   Pagination
@@ -481,6 +485,7 @@ module.exports = {
   UpdateArticle,
   DeleteArticle,
   GetArticle,
+  CommentsArticleRead,
   CommentsArticle,
   DelCommentsArticle,
   LikesArticle,
