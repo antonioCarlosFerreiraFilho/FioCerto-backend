@@ -18,7 +18,6 @@ const {
   UpdateArticle,
   DeleteArticle,
   GetArticle,
-  CommentsArticleRead,
   CommentsArticle,
   DelCommentsArticle,
   LikesArticle,
@@ -51,8 +50,6 @@ router.put(
 router.delete("/del/:id", AuthGuard, ErrorsValidate, DeleteArticle);
 //  GetArticle
 router.get("/get/:id", ErrorsValidate, GetArticle);
-// Read Comments
-router.get("/readComments/:id", CommentsArticleRead);
 //  Comments
 router.put(
   "/comment/:id",
@@ -77,6 +74,6 @@ router.get("/recently", RecentlyPostedArticle);
 //  About Article
 router.get("/about", AboutArticle);
 //  Pagination
-router.get("/gallery", PaginationArticle);
+router.get("/gallery/:page", PaginationArticle);
 
 module.exports = router;

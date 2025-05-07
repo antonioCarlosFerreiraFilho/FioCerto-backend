@@ -107,7 +107,7 @@ const CreateArticle = async (req, res) => {
   }
 };
 
-//   Read
+//   Read ✓
 const ReadArticle = async (req, res) => {
   const allArticles = await Article.find({})
     .sort([["createdAt", -1]])
@@ -253,7 +253,7 @@ const DeleteArticle = async (req, res) => {
   }
 };
 
-// GetArticle
+// GetArticle ✓
 const GetArticle = async (req, res) => {
   const { id } = req.params;
 
@@ -270,22 +270,7 @@ const GetArticle = async (req, res) => {
   }
 };
 
-// Read Comments Article
-const CommentsArticleRead = async (req, res) => {
-  const { id } = req.params;
-
-  const ArticleDB = await Article.findById(id);
-
-  if (!ArticleDB) {
-    return res.status(404).json({ errors: ["Artigo não encontrado."] });
-  }
-
-  const ArticleComments = ArticleDB.comments;
-
-  return res.status(200).json(ArticleComments);
-};
-
-// Comments
+// Comments ✓
 const CommentsArticle = async (req, res) => {
   const { id } = req.params;
   const { comments } = req.body;
@@ -448,7 +433,7 @@ const ViewsArticle = async (req, res) => {
   });
 };
 
-//   Recently
+//   Recently ✓
 const RecentlyPostedArticle = async (req, res) => {
   const FristSix = await Article.find({})
     .sort([["createdAt", -1]])
@@ -458,7 +443,7 @@ const RecentlyPostedArticle = async (req, res) => {
   return res.status(200).json(FristSix);
 };
 
-//   About
+//   About ✓
 const AboutArticle = async (req, res) => {
   const FristThree = await Article.find({})
     .sort([["createdAt", -1]])
@@ -470,7 +455,7 @@ const AboutArticle = async (req, res) => {
 
 //   Pagination
 const PaginationArticle = async (req, res) => {
-  const { page = 0 } = req.body;
+  const { page = 0 } = req.params;
 
   const offset = page * 6;
 
@@ -485,7 +470,6 @@ module.exports = {
   UpdateArticle,
   DeleteArticle,
   GetArticle,
-  CommentsArticleRead,
   CommentsArticle,
   DelCommentsArticle,
   LikesArticle,
