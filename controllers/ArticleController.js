@@ -457,9 +457,9 @@ const AboutArticle = async (req, res) => {
 const PaginationArticle = async (req, res) => {
   const { page = 0 } = req.params;
 
-  const offset = page * 6;
+  const offset = page * 5;
 
-  const ArticlesDB = await Article.find({}).skip(offset).limit(6).exec();
+  const ArticlesDB = await Article.find({}).skip(offset).limit(5).exec();
 
   res.status(200).json(ArticlesDB);
 };
