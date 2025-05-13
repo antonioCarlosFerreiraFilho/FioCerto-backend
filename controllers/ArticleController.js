@@ -464,6 +464,21 @@ const PaginationArticle = async (req, res) => {
   res.status(200).json(ArticlesDB);
 };
 
+//   Search Article
+const SearchArticle = async (req, res) => {
+  const { q } = req.query;
+
+  const Search = await Article.find({
+    articleTitle: new RegExp(q, "i"),
+  }).exec();
+
+  if (Search == "") {
+    return res.status(404).json({ errors: ["Sem Resultados."] });
+  }
+
+  return res.status(200).json(Search);
+};
+
 module.exports = {
   CreateArticle,
   ReadArticle,
@@ -477,4 +492,5 @@ module.exports = {
   RecentlyPostedArticle,
   AboutArticle,
   PaginationArticle,
+  SearchArticle,
 };

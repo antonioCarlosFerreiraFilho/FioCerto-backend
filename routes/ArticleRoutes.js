@@ -25,6 +25,7 @@ const {
   RecentlyPostedArticle,
   AboutArticle,
   PaginationArticle,
+  SearchArticle,
 } = require("../controllers/ArticleController");
 
 //  Create
@@ -75,5 +76,7 @@ router.get("/recently", RecentlyPostedArticle);
 router.get("/about", AboutArticle);
 //  Pagination
 router.get("/gallery/:page", PaginationArticle);
+//  Search Article
+router.get("/search", SearchArticle);
 
 module.exports = router;
