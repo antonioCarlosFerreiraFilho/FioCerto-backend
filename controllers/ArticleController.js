@@ -453,7 +453,7 @@ const AboutArticle = async (req, res) => {
   return res.status(200).json(FristThree);
 };
 
-//   Pagination
+//   Pagination ✓
 const PaginationArticle = async (req, res) => {
   const { page = 0 } = req.params;
 
