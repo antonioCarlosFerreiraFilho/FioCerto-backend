@@ -129,14 +129,7 @@ const UpdateArticle = async (req, res) => {
     UserCurrent.id == ADM_id
   ) {
     // Article Text data
-    const {
-      articleTitle,
-      miniDescri,
-      firstTitle,
-      firstDescri,
-      lastTitle,
-      lastDescri,
-    } = req.body;
+    const { miniDescri, firstDescri, lastDescri } = req.body;
 
     // Article DB
     const ArticleDB = await Article.findById(id);
@@ -154,24 +147,12 @@ const UpdateArticle = async (req, res) => {
       (await bcrypt.compare(AdmID, ArticleADMid)) &&
       bcrypt.compare(ArticleADMpass, AdmPass)
     ) {
-      if (articleTitle) {
-        ArticleDB.articleTitle = articleTitle;
-      }
-
       if (miniDescri) {
         ArticleDB.miniDescri = miniDescri;
       }
 
-      if (firstTitle) {
-        ArticleDB.firstTitle = firstTitle;
-      }
-
       if (firstDescri) {
         ArticleDB.firstDescri = firstDescri;
-      }
-
-      if (lastTitle) {
-        ArticleDB.lastTitle = lastTitle;
       }
 
       if (lastDescri) {
@@ -182,7 +163,7 @@ const UpdateArticle = async (req, res) => {
 
       res.status(200).json({
         ArticleDB,
-        message: "Artigo atualizado",
+        message: " Artigo atualizado ",
       });
     } else {
       return res.status(422).json({ errors: ["Usuario não Autorizado."] });
