@@ -271,14 +271,17 @@ const CommentsArticle = async (req, res) => {
     return res.status(404).json({ errors: ["Artigo não encontrado."] });
   }
 
-  // Length Comments Article
+  // Generating ID comment
+  let min = 10;
+  let max = 300;
+  let randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   const commentsArticle = ArticleDB.comments.length;
 
   const newComment = {
     userName: UserCurrent.firstName + " " + UserCurrent.lastName,
     userId: UserCurrent._id,
     dataComment,
-    idComment: commentsArticle + 1,
+    idComment: commentsArticle + randomNumber,
     comments,
   };
 
@@ -300,9 +303,10 @@ const CommentsArticle = async (req, res) => {
 
 // Delete Comment
 const DelCommentsArticle = async (req, res) => {
-  const { postId, commentId } = req.params;
+  const { id: postId, commentId } = req.body;
   const reqUser = req.user;
 
+  //
   const UserCurrent = await User.findById(reqUser._id);
   const ArticleDB = await Article.findById(postId);
   // ADM user validation

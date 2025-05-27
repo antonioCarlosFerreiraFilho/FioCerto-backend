@@ -60,12 +60,7 @@ router.put(
   CommentsArticle
 );
 //  DelComments
-router.delete(
-  "/get/:postId/commentID/:commentId",
-  AuthGuard,
-  ErrorsValidate,
-  DelCommentsArticle
-);
+router.put("/delComment", AuthGuard, ErrorsValidate, DelCommentsArticle);
 //  Likes
 router.put("/:id", AuthGuard, ErrorsValidate, LikesArticle);
 //  View
