@@ -50,7 +50,7 @@ router.put(
 //  Delete
 router.delete("/del/:id", AuthGuard, ErrorsValidate, DeleteArticle);
 //  GetArticle
-router.get("/get/:id", ErrorsValidate, GetArticle);
+router.get("/get/:id", GetArticle);
 //  Comments
 router.put(
   "/comment/:id",
@@ -64,7 +64,7 @@ router.put("/delComment", AuthGuard, ErrorsValidate, DelCommentsArticle);
 //  Likes
 router.put("/:id", AuthGuard, ErrorsValidate, LikesArticle);
 //  View
-router.put("/view/:id", AuthGuard, ErrorsValidate, ViewsArticle);
+router.put("/view/:id", ViewsArticle);
 //  Recently Posted Article
 router.get("/recently", RecentlyPostedArticle);
 //  About Article

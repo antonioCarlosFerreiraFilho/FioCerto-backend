@@ -116,7 +116,7 @@ const ReadArticle = async (req, res) => {
   return res.status(200).json(allArticles);
 };
 
-//   Update
+//   Update ✓
 const UpdateArticle = async (req, res) => {
   const { id } = req.params;
   const reqUser = await req.user;
@@ -173,7 +173,7 @@ const UpdateArticle = async (req, res) => {
   }
 };
 
-//   Delete
+//   Delete ✓
 const DeleteArticle = async (req, res) => {
   const { id } = req.params;
   const reqUser = await req.user;
@@ -301,7 +301,7 @@ const CommentsArticle = async (req, res) => {
   });
 };
 
-// Delete Comment
+// Delete Comment ✓
 const DelCommentsArticle = async (req, res) => {
   const { id: postId, commentId } = req.body;
   const reqUser = req.user;
@@ -364,7 +364,7 @@ const DelCommentsArticle = async (req, res) => {
   }
 };
 
-//   Likes
+//   Likes ✓
 const LikesArticle = async (req, res) => {
   const { id } = req.params;
   const reqUser = req.user;
@@ -384,6 +384,8 @@ const LikesArticle = async (req, res) => {
   await ArticleDB.save();
 
   return res.status(200).json({
+    article: id,
+    userId: reqUser._id,
     message: "Este Artigo foi curtido!.",
   });
 };
@@ -391,10 +393,8 @@ const LikesArticle = async (req, res) => {
 //   Views
 const ViewsArticle = async (req, res) => {
   const { id } = req.params;
-  const reqUser = req.user;
 
   const ArticleDB = await Article.findById(id);
-  const UserCurrent = await User.findById(reqUser._id);
 
   if (!ArticleDB) {
     return res.status(404).json({ errors: ["Artigo não encontrado."] });
@@ -403,11 +403,7 @@ const ViewsArticle = async (req, res) => {
   // Length Views Article
   const ViewsArticle = ArticleDB.views.length;
 
-  const newViews = {
-    userName: UserCurrent.firstName + " " + UserCurrent.lastName,
-    userId: UserCurrent._id,
-    idViews: ViewsArticle + 1,
-  };
+  const newViews = ArticleDB.views.length + 1;
 
   await ArticleDB.views.push(newViews);
 
