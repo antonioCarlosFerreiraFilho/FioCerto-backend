@@ -75,6 +75,7 @@ const CreateArticle = async (req, res) => {
         errors: ["Você pode enviar no máximo 3 imagens."],
       });
     }
+    
     const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
     req.files.forEach((file) => {
       if (!allowedMimeTypes.includes(file.mimetype)) {

@@ -32,7 +32,7 @@ const {
 router.post(
   "/newarticle",
   AuthGuard,
-  UploadImage.array("file"),
+  UploadImage.array("files"),
   articleValidate(),
   ErrorsValidate,
   CreateArticle
