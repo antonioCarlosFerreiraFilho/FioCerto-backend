@@ -13,6 +13,7 @@ const s3 = new aws.S3();
 
 //   Create
 const CreateArticle = async (req, res) => {
+
   const reqUser = await req.user;
   const UserCurrent = await User.findById(reqUser._id);
 
@@ -100,9 +101,7 @@ const CreateArticle = async (req, res) => {
     const saveDB = await newArticle.save();
 
     // Response and creation
-    return res.status(201).json({
-      msg: newArticle,
-    });
+    return res.status(201).json({newArticle});
   } else {
     return res.status(422).json({ errors: ["Usuario não Autorizado."] });
   }
