@@ -54,7 +54,7 @@ const UploadImage = multer({
   //  }
   //},
   limits: {
-    fileSize: 2 * 1024 * 1024,
+    fileSize: 50 * 1024 * 1024, 
   },
 });
 
